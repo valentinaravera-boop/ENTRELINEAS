@@ -34,8 +34,15 @@ function onPageEnter(idx){
 }
 
 document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight') goNext(); if(e.key==='ArrowLeft') goPrev(); });
-let tsX=0; document.addEventListener('touchstart',e=>tsX=e.touches[0].clientX);
-document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tsX; if(Math.abs(dx)>50){ dx<0?goNext():goPrev(); } });
+let tsX=0, tsY=0;
+document.addEventListener('touchstart',e=>{ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; });
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tsX;
+  const dy=e.changedTouches[0].clientY-tsY;
+  // only treat as a page swipe if the gesture is clearly horizontal,
+  // so vertical scrolling inside a panel never flips the page
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){ dx<0?goNext():goPrev(); }
+});
 window.addEventListener('resize',()=>{ track.style.transition='none'; track.style.transform=`translateX(-${currentPage*window.innerWidth}px)`; setTimeout(()=>track.style.transition='',50); });
 
 // ============================================================
@@ -72,22 +79,23 @@ function initSprayMap(){
   const base=document.createElementNS(SVGNS,'g');
   base.setAttribute('filter','url(#rough)');
   base.innerHTML=`
-    <rect x="0" y="0" width="500" height="620" fill="#1f1b14"/>
+    
     ${gridBlocks()}
     <path d="M250 30 C 235 130, 268 220, 248 300 C 232 380, 270 470, 252 590" fill="none" stroke="rgba(245,238,218,0.22)" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/>
-    <text x="270" y="600" font-family="Permanent Marker,cursive" font-size="13" fill="rgba(245,238,218,0.3)" transform="rotate(-4 270 600)">av. 107 →</text>
+    <text x="270" y="600" font-family="Bebas Neue" font-size="13" fill="rgba(245,238,218,0.3)" transform="rotate(-4 270 600)">av. 107 →</text>
   `;
   svg.appendChild(base);
 
   const stops=[
-    {x:250,y:92, r:62, n:'Ciudad Universitaria', c:180, col:'#1fdb3a'},
-    {x:250,y:228,r:52, n:'Belgrano (B. Encalada)', c:160, col:'#1d3df0'},
-    {x:250,y:352,r:42, n:'Palermo · Plaza Italia', c:120, col:'#f0379a'},
-    {x:250,y:456,r:32, n:'Estación Villa Urquiza', c:95, col:'#ff5a00'},
-    {x:256,y:548,r:25, n:'Parque Avellaneda', c:75, col:'#8b3fc4'},
+    {x:250,y:92,  r:60, n:'Ciudad Universitaria', c:130, col:'#1d3df0'},
+    {x:250,y:228, r:40, n:'Belgrano (B. Encalada)', c:120, col:'#ff5a00'},
+    {x:250,y:352, r:70, n:'Palermo · Plaza Italia', c:180, col:'#1fdb3a'},
+    {x:250,y:456, r:20, n:'Estación Villa Urquiza', c:50, col:'#8b3fc4'},
+    {x:256,y:548, r:15, n:'Parque Avellaneda', c:25, col:'#f0379a'},
   ];
 
   stops.forEach((s,i)=>{
+    s.displayRadius = s.r;
     setTimeout(()=>sprayStop(svg,s,i,tip),350+i*450);
   });
 }
@@ -107,40 +115,42 @@ function sprayStop(svg,s,i,tip){
   const g=document.createElementNS(SVGNS,'g');
   g.style.cursor='pointer';
 
+  const baseRadius = s.displayRadius || s.r;
+
   // multiple overlapping spray dabs = aerosol layering
   const dab=document.createElementNS(SVGNS,'g');
   dab.setAttribute('filter','url(#spray)');
   for(let k=0;k<3;k++){
     const c=document.createElementNS(SVGNS,'circle');
-    c.setAttribute('cx', s.x+(Math.random()-0.5)*10);
-    c.setAttribute('cy', s.y+(Math.random()-0.5)*10);
-    c.setAttribute('r', s.r*(0.7+k*0.16));
+    c.setAttribute('cx', s.x+(Math.random()-0.5)*8);
+    c.setAttribute('cy', s.y+(Math.random()-0.5)*8);
+    c.setAttribute('r', baseRadius * (0.85 + k * 0.12));
     c.setAttribute('fill', s.col);
-    c.setAttribute('opacity', 0.22+k*0.06);
+    c.setAttribute('opacity', 0.20 + k * 0.08);
     dab.appendChild(c);
   }
   // overspray speckle
   const speck=document.createElementNS(SVGNS,'circle');
-  speck.setAttribute('cx',s.x);speck.setAttribute('cy',s.y);speck.setAttribute('r',s.r*1.25);
-  speck.setAttribute('fill',s.col);speck.setAttribute('opacity','0.5');speck.setAttribute('filter','url(#grainy)');
+  speck.setAttribute('cx',s.x);speck.setAttribute('cy',s.y);speck.setAttribute('r',baseRadius * 1.08);
+  speck.setAttribute('fill',s.col);speck.setAttribute('opacity','0.45');speck.setAttribute('filter','url(#grainy)');
   g.appendChild(speck);
   g.appendChild(dab);
 
   // hand-written label
   const t1=document.createElementNS(SVGNS,'text');
   t1.setAttribute('x',s.x);t1.setAttribute('y',s.y+4);t1.setAttribute('text-anchor','middle');
-  t1.setAttribute('font-family','Permanent Marker,cursive');
-  t1.setAttribute('font-size', Math.max(11, s.r*0.32));
+  t1.setAttribute('font-family','Bebas Neue');
+  t1.setAttribute('font-size', Math.max(11, baseRadius*0.28));
   t1.setAttribute('fill','#0d0c0a');
   t1.textContent=s.c;
   g.appendChild(t1);
 
   // count tag, hand-written, off to the side
   const t2=document.createElementNS(SVGNS,'text');
-  t2.setAttribute('x',s.x+s.r+14);t2.setAttribute('y',s.y+2);
-  t2.setAttribute('font-family','Caveat,cursive');t2.setAttribute('font-size','15');
-  t2.setAttribute('fill','rgba(245,238,218,0.55)');
-  t2.textContent=s.n.split(' ')[0];
+  t2.setAttribute('x',s.x+baseRadius+14);t2.setAttribute('y',s.y+2);
+  t2.setAttribute('font-family','Archivo,sans-serif');t2.setAttribute('font-size','15');
+  t2.setAttribute('fill','rgba(245,238,218,0.75)');
+  t2.textContent=s.c;
   g.appendChild(t2);
 
   // grow-in animation (stop-motion-ish pop)
@@ -229,12 +239,12 @@ function paintBlob(svg,key,i){
   const bb=blobCenter(key);
   const t=document.createElementNS(SVGNS,'text');
   t.setAttribute('x',bb.x);t.setAttribute('y',bb.y);t.setAttribute('text-anchor','middle');
-  t.setAttribute('font-family','Permanent Marker,cursive');t.setAttribute('font-size','15');
+  t.setAttribute('font-family','Bebas Neue');t.setAttribute('font-size','15');
   t.setAttribute('fill','#0d0c0a');t.setAttribute('opacity','0.85');
   t.textContent=key.toUpperCase();
   const t2=document.createElementNS(SVGNS,'text');
   t2.setAttribute('x',bb.x);t2.setAttribute('y',bb.y+15);t2.setAttribute('text-anchor','middle');
-  t2.setAttribute('font-family','Caveat,cursive');t2.setAttribute('font-size','14');
+  t2.setAttribute('font-family','Archivo,sans-serif');t2.setAttribute('font-size','14');
   t2.setAttribute('fill','#0d0c0a');t2.setAttribute('opacity','0.7');
   t2.textContent=Math.round(d.pct*100)+'%';
 
@@ -356,9 +366,9 @@ function initTimeGrid(){
     }));
 
     // labels — handwritten
-    ctx.fillStyle='rgba(245,238,218,0.6)'; ctx.font="14px 'Permanent Marker', cursive"; ctx.textAlign='center';
+    ctx.fillStyle='rgba(245,238,218,0.6)'; ctx.font="14px 'Bebas Neue'"; ctx.textAlign='center';
     days.forEach((d,di)=>ctx.fillText(d,M.l+di*cw+cw/2,M.t-12));
-    ctx.font="12px 'Caveat', cursive"; ctx.textAlign='right'; ctx.fillStyle='rgba(245,238,218,0.45)';
+    ctx.font="12px 'Archivo', sans-serif"; ctx.textAlign='right'; ctx.fillStyle='rgba(245,238,218,0.45)';
     hours.forEach((h,hi)=>{ if(hi%2===0) ctx.fillText(h+'h',M.l-6,M.t+hi*ch+ch/2+4); });
 
     // roving bus leaving a trail
@@ -434,7 +444,7 @@ function initGrowth(){
       c.style.opacity='0';c.style.transition='opacity 0.4s';
       svg.appendChild(c); setTimeout(()=>c.style.opacity='0.95',40);
       if(s.l){ const t=document.createElementNS(SVGNS,'text'); t.setAttribute('x',s.x+13);t.setAttribute('y',s.y+5);
-        t.setAttribute('fill','#f2ecd9');t.setAttribute('font-family','Caveat, cursive');t.setAttribute('font-size','14');t.setAttribute('opacity','0.8');
+        t.setAttribute('fill','#f2ecd9');t.setAttribute('font-family','Archivo, sans-serif');t.setAttribute('font-size','14');t.setAttribute('opacity','0.8');
         t.textContent=s.l; svg.appendChild(t); }
     },delay+i*240+400));
   }

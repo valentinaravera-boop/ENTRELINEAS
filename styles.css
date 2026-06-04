@@ -1,8 +1,8 @@
 :root {
-    --blue: #1d3df0;
-    --pink: #f0379a;
-    --green: #1fdb3a;
-    --yellow: #ffd400;
+    --blue: #0040FF;
+    --pink: #FC41A2;
+    --green: #2BFF00;
+    --yellow: #84ff00;
     --orange: #ff5a00;
     --purple: #8b3fc4;
     --black: #131110;
@@ -143,32 +143,40 @@ body::before {
 
 @media (max-width: 899px) {
 
+    /* carousel model: one screen per page, swipe sideways.
+       no vertical page-scroll — each page is a fixed viewport,
+       content scrolls INSIDE its panel if it overflows. */
     html,
     body {
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
     #fanzine {
-        height: auto;
-        overflow: visible;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
     }
 
     #pages-track {
-        height: auto;
+        height: 100vh;
+        height: 100dvh;
     }
 
     .page {
         width: 100vw;
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
+    /* stack the two halves vertically; the PAGE scrolls, not each half */
     .double-page {
         width: 100vw;
         display: grid;
         grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        min-height: 100%;
     }
 
     .double-page::before {
@@ -190,6 +198,24 @@ body::before {
     .p5-right {
         background: transparent !important;
     }
+
+    #nav-prev,
+    #nav-next {
+        display: none !important;
+    }
+
+    /* page-counter dots become the mobile nav — float above the
+       home-bar and make them tappable-sized */
+    #page-counter {
+        bottom: max(14px, env(safe-area-inset-bottom));
+        gap: 13px;
+        padding: 7px 14px;
+    }
+
+    .dot {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 /* ====================================================
@@ -209,9 +235,9 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 23px;
     color: var(--ink);
-    font-family: 'Permanent Marker', cursive;
+    font-family: 'Bebas Neue';
     box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
     transition: transform 0.15s, background 0.15s;
     clip-path: polygon(2% 6%, 96% 0, 100% 92%, 6% 100%);
@@ -268,7 +294,7 @@ body::before {
     border: 2px solid var(--ink);
     transition: all 0.2s;
     transform: rotate(8deg);
-    font-family: 'Permanent Marker', cursive;
+    font-family: 'Bebas Neue';
 }
 
 .dot:nth-child(even) {
@@ -377,14 +403,14 @@ body::before {
 
 /* handwritten note */
 .note {
-    font-family: 'Caveat', cursive;
-    font-size: 18px;
+    font-family: 'Archivo';
+    font-size: 15px;
     line-height: 1.35;
     color: var(--ink);
 }
 
 .marker {
-    font-family: 'Permanent Marker', cursive;
+    font-family: 'Bebas Neue';
 }
 
 .typed {
@@ -409,7 +435,10 @@ body::before {
 }
 
 .hl-pink {
-    background-image: linear-gradient(100deg, transparent 2%, rgba(0, 0, 0, 0.55) 5%, rgba(0, 0, 0, 0.55) 90%, transparent 96%);
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+    mix-blend-mode: normal;
+    background-image: linear-gradient(100deg, transparent 2%, rgba(0, 0, 0, 0.92) 5%, rgba(0, 0, 0, 0.92) 90%, transparent 96%);
 }
 
 .hl-green {
@@ -742,8 +771,8 @@ body::before {
 }
 
 .origin-clip .q {
-    font-family: 'Caveat', cursive;
-    font-size: 20px;
+    font-family: 'Archivo';
+    font-size: 19px;
     line-height: 1.4;
     color: #33291c;
     margin-top: 6px;
@@ -758,7 +787,7 @@ body::before {
     position: absolute;
     inset: 0;
     width: 100%;
-    height: 100%;
+    height: 409px;
     z-index: 0;
     opacity: 0.5;
 }
@@ -792,11 +821,12 @@ body::before {
     margin-top: 5px;
     padding: 9px 13px;
     background: var(--paper);
-    font-family: 'Caveat', cursive;
-    font-size: 16px;
+    font-family: 'Archivo';
+    font-size: 15px;
     color: var(--ink);
     box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.18);
     position: relative;
+    line-height:20px;
 }
 
 /* Remaining responsive tweaks */
@@ -814,73 +844,110 @@ body::before {
     #page-5 .p-right {
         padding: 26px 22px !important;
     }
+
+    /* page 1 is text/collage: let it flow and scroll naturally.
+       (pages 2/3/5/final keep fixed-height panels because their
+       SVG/canvas visuals are absolutely positioned and need it.) */
+    #page-1 .p-left,
+    #page-1 .p-right {
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    #page-1.double-page {
+        grid-template-rows: auto auto;
+    }
+
+    /* the other visual pages each fill one screen, no inner scroll */
+    #page-3,
+    #page-4,
+    #page-5,
+    #page-final {
+        overflow: hidden;
+    }
+
+    #page-3.double-page,
+    #page-4.double-page,
+    #page-5.double-page {
+        grid-template-rows: 40vh 60vh;
+        height: 100dvh;
+    }
 }
 
 /* ====================================================
    PAGE 2 — HEATMAP AS SPRAY-PAINT ON HAND-DRAWN MAP
    ==================================================== */
-#page-2 .p-left {
-    background: #16140f;
-    padding: 46px 38px;
-    position: relative;
-    overflow: hidden;
+#page-2 {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+}
+
+#page-2 .p-left,
+#page-2 .p-right {
+    position: relative;
+    padding: 46px 38px;
+}
+
+#page-2 .p-left {
+    background: #16140f;
 }
 
 #page-2 .p-right {
     background: #1a1712;
-    position: relative;
-    overflow: hidden;
+    flex-shrink: 0;
 }
 
 #map-svg {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
+    display: block;
 }
 
-.spray-tip {
+#spray-tip {
     position: absolute;
-    background: var(--paper);
-    color: var(--ink);
-    padding: 6px 12px;
-    font-family: 'Permanent Marker', cursive;
-    font-size: 15px;
-    border: 2px solid var(--ink);
-    box-shadow: 3px 3px 0 var(--pink);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 13px;
     pointer-events: none;
+    z-index: 1000;
     display: none;
-    z-index: 200;
-    transform: rotate(-2deg);
+    white-space: nowrap;
 }
 
 /* ====================================================
    PAGE 3 — TEMÁTICAS = GRAFFITI BLOTS THAT FILL UP
    ==================================================== */
+#page-3 {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
 #page-3 .p-left {
     background: #161310;
     padding: 46px 38px;
-    display: flex;
-    flex-direction: column;
     position: relative;
-    overflow: hidden;
 }
 
 #page-3 .p-right {
     background: #100e0c;
     position: relative;
+    padding: 46px 38px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    min-height: 500px;
 }
 
 .wall {
     position: relative;
     width: 94%;
-    height: 92%;
+    height: 400px;
 }
 
 .wall::before {
@@ -898,6 +965,7 @@ body::before {
     inset: 0;
     width: 100%;
     height: 100%;
+    display: block;
 }
 
 .theme-row {
@@ -916,7 +984,7 @@ body::before {
 }
 
 .theme-tag {
-    font-family: 'Permanent Marker', cursive;
+    font-family: 'Bebas Neue';
     font-size: 23px;
     color: var(--paper3);
     flex: 1;
@@ -953,8 +1021,8 @@ body::before {
     background: var(--paper);
     color: var(--ink);
     padding: 16px 18px;
-    font-family: 'Caveat', cursive;
-    font-size: 19px;
+    font-family: 'Archivo';
+    font-size: 18px;
     box-shadow: 5px 6px 0 var(--green);
     transform: rotate(-1deg);
     opacity: 0;
@@ -981,23 +1049,23 @@ body::before {
 /* ====================================================
    PAGE 4 — LIBROS = FANZINES FÍSICOS DESGASTADOS
    ==================================================== */
+#page-4 {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
 #page-4 .p-left {
     background: var(--paper2);
     padding: 46px 38px;
-    display: flex;
-    flex-direction: column;
     position: relative;
-    overflow: hidden;
 }
 
 #page-4 .p-right {
     background: var(--kraft);
     padding: 40px 30px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
     position: relative;
-    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .shelf {
@@ -1048,8 +1116,8 @@ body::before {
     background: var(--paper);
     color: var(--ink);
     padding: 8px 12px;
-    font-family: 'Caveat', cursive;
-    font-size: 15px;
+    font-family: 'Archivo';
+    font-size: 14px;
     white-space: nowrap;
     display: none;
     z-index: 100;
@@ -1077,8 +1145,8 @@ body::before {
 }
 
 .tally-label {
-    font-family: 'Caveat', cursive;
-    font-size: 17px;
+    font-family: 'Archivo';
+    font-size: 16px;
     color: var(--ink);
     width: 96px;
     flex-shrink: 0;
@@ -1109,45 +1177,53 @@ body::before {
 /* ====================================================
    PAGE 5 — HORARIOS (ink press grid)
    ==================================================== */
+#page-5 {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
 #page-5 .p-left {
     background: #14100c;
     padding: 46px 38px;
-    display: flex;
-    flex-direction: column;
     position: relative;
-    overflow: hidden;
 }
 
 #page-5 .p-right {
     background: #100c08;
     position: relative;
-    overflow: hidden;
+    padding: 46px 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
 }
 
 #time-canvas {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
+    height: 400px;
 }
 
 /* ====================================================
    PAGE FINAL — CRECIMIENTO (marker map)
    ==================================================== */
 #page-final {
-    background: radial-gradient(circle at 50% 40%, #16140f, #09080700 60%), #0a0908;
-    align-items: center;
-    justify-content: center;
+    display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    align-items: center;
+    justify-content: flex-start;
     position: relative;
-    overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, #16140f, #09080700 60%), #0a0908;
+    padding: 46px 38px;
 }
 
 #growth-svg {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
+    display: block;
+    margin-top: 20px;
 }
 
 .growth-title {
@@ -1162,7 +1238,7 @@ body::before {
 }
 
 .final-phrase {
-    font-family: 'Permanent Marker', cursive;
+    font-family: 'Bebas Neue';
     font-size: clamp(20px, 3vw, 34px);
     color: var(--paper3);
     text-align: center;
