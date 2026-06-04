@@ -87,11 +87,10 @@ function initSprayMap(){
   svg.appendChild(base);
 
   const stops=[
-    {x:250,y:92,  r:60, n:'Ciudad Universitaria', c:130, col:'#1d3df0'},
-    {x:250,y:228, r:40, n:'Belgrano (B. Encalada)', c:120, col:'#ff5a00'},
-    {x:250,y:352, r:70, n:'Palermo · Plaza Italia', c:180, col:'#1fdb3a'},
-    {x:250,y:456, r:20, n:'Estación Villa Urquiza', c:50, col:'#8b3fc4'},
-    {x:256,y:548, r:15, n:'Parque Avellaneda', c:25, col:'#f0379a'},
+    {x:250,y:90,  r:65, n:'Ciudad Universitaria', detail:'Cabecera Norte · inicio de recorrido', writers:130, fanzine:'dibujos',   theme:'estudios',  peak:'mañana 8–10h',   col:'#1d3df0'},
+    {x:250,y:240, r:48, n:'Belgrano',             detail:'Blanco Encalada y Cabildo',           writers:120, fanzine:'historias',  theme:'amistad',   peak:'mediodía 13–15h', col:'#1fdb3a'},
+    {x:250,y:385, r:26, n:'Villa Urquiza',         detail:'Estación',                            writers:50,  fanzine:'anécdotas', theme:'trabajo',   peak:'tarde 18–21h',   col:'#f0379a'},
+    {x:256,y:530, r:16, n:'Parque Avellaneda',    detail:'Eva Perón y Olivera · fin de recorrido', writers:25, fanzine:'dibujos',  theme:'familia',   peak:'tarde 18–20h',   col:'#1d3df0'},
   ];
 
   stops.forEach((s,i)=>{
@@ -136,21 +135,22 @@ function sprayStop(svg,s,i,tip){
   g.appendChild(speck);
   g.appendChild(dab);
 
-  // hand-written label
+  // writers count — inside the blob, una sola vez
   const t1=document.createElementNS(SVGNS,'text');
   t1.setAttribute('x',s.x);t1.setAttribute('y',s.y+4);t1.setAttribute('text-anchor','middle');
   t1.setAttribute('font-family','Bebas Neue');
   t1.setAttribute('font-size', Math.max(11, baseRadius*0.28));
   t1.setAttribute('fill','#0d0c0a');
-  t1.textContent=s.c;
+  t1.textContent=s.writers;
   g.appendChild(t1);
 
-  // count tag, hand-written, off to the side
+  // fanzine type — al costado, no el número otra vez
   const t2=document.createElementNS(SVGNS,'text');
-  t2.setAttribute('x',s.x+baseRadius+14);t2.setAttribute('y',s.y+2);
-  t2.setAttribute('font-family','Archivo,sans-serif');t2.setAttribute('font-size','15');
-  t2.setAttribute('fill','rgba(245,238,218,0.75)');
-  t2.textContent=s.c;
+  t2.setAttribute('x',s.x+baseRadius+10);t2.setAttribute('y',s.y+2);
+  t2.setAttribute('font-family','Bebas Neue,sans-serif');t2.setAttribute('font-size','13');
+  t2.setAttribute('fill','rgba(245,238,218,0.6)');
+  t2.setAttribute('letter-spacing','1');
+  t2.textContent=s.fanzine;
   g.appendChild(t2);
 
   // grow-in animation (stop-motion-ish pop)
@@ -162,7 +162,10 @@ function sprayStop(svg,s,i,tip){
     {transform:'scale(1)',opacity:1}
   ],{duration:900,easing:'cubic-bezier(.34,1.56,.64,1)',fill:'forwards'});
 
-  g.addEventListener('mouseenter',()=>{ tip.style.display='block'; tip.textContent=`${s.n} · ${s.c} aportes`; });
+  g.addEventListener('mouseenter',()=>{
+    tip.style.display='block';
+    tip.innerHTML=`<strong>${s.n}</strong><br><span style="font-family:Archivo,sans-serif;font-size:12px;opacity:0.8;">${s.writers} escritores · ${s.fanzine}<br>${s.peak} · ${s.theme}</span>`;
+  });
   g.addEventListener('mousemove',e=>{ const r=svg.closest('.p-right').getBoundingClientRect(); tip.style.left=(e.clientX-r.left+12)+'px'; tip.style.top=(e.clientY-r.top-30)+'px'; });
   g.addEventListener('mouseleave',()=>tip.style.display='none');
 
@@ -194,11 +197,18 @@ function initGraffiti(){
   const svg=document.getElementById('graffiti-svg');
   const defs=document.createElementNS(SVGNS,'defs');
   defs.innerHTML=`
-    <filter id="gspray" x="-30%" y="-30%" width="160%" height="160%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="10"/>
+    <filter id="gspray" x="-45%" y="-45%" width="190%" height="190%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="22"/>
+      <feGaussianBlur stdDeviation="0.7"/>
     </filter>
-    <filter id="drip"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.04" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="12" yChannelSelector="G"/></filter>`;
+    <filter id="drip">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.055" numOctaves="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="16" yChannelSelector="G"/>
+    </filter>
+    <filter id="gshadow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>`;
   svg.appendChild(defs);
 
   const order=['estudios','amistad','amor','sueños','trabajo','familia'];
@@ -210,6 +220,16 @@ function initGraffiti(){
   setTimeout(()=>{ document.querySelectorAll('#theme-list .theme-meter > span').forEach(s=>{ s.style.width=s.dataset.pct+'%'; }); },500);
 }
 
+// puntos de goteo (x=posición horizontal, y=donde empieza el chorro, h=largo, w=ancho)
+const blobDrips={
+  estudios:[{x:158,y:239,h:30,w:4},{x:218,y:242,h:18,w:3},{x:278,y:238,h:26,w:3.5}],
+  amistad: [{x:258,y:292,h:22,w:3.5},{x:316,y:283,h:16,w:2.8}],
+  amor:    [{x:192,y:377,h:28,w:4},{x:248,y:381,h:18,w:3}],
+  sueños:  [{x:92, y:386,h:22,w:3.5},{x:132,y:389,h:32,w:4.5}],
+  trabajo: [{x:76, y:240,h:18,w:3},{x:110,y:242,h:13,w:2.5}],
+  familia: [{x:98, y:158,h:16,w:2.5},{x:128,y:156,h:24,w:3}],
+};
+
 function paintBlob(svg,key,i){
   const d=themeData[key];
   const g=document.createElementNS(SVGNS,'g');
@@ -217,41 +237,93 @@ function paintBlob(svg,key,i){
   g.style.cursor='pointer';
   g.dataset.theme=key;
 
-  // outline drawn first (marker), then fills in
-  const outline=document.createElementNS(SVGNS,'path');
-  outline.setAttribute('d',blobShapes[key]);
-  outline.setAttribute('fill','none');
-  outline.setAttribute('stroke',d.color);
-  outline.setAttribute('stroke-width','3');
-  outline.setAttribute('opacity','0.9');
-  outline.setAttribute('filter','url(#drip)');
+  const path=blobShapes[key];
 
+  // 1. SOMBRA — copia oscura desplazada, borrosa (efecto 3D sobre la pared)
+  const shadow=document.createElementNS(SVGNS,'path');
+  shadow.setAttribute('d',path);
+  shadow.setAttribute('fill','#060504');
+  shadow.setAttribute('opacity','0.65');
+  shadow.setAttribute('transform','translate(7,10)');
+  shadow.setAttribute('filter','url(#gshadow)');
+  g.appendChild(shadow);
+
+  // 2. OUTLINE NEGRO GRUESO — el "sketch" de marcador que define la forma
+  const outerLine=document.createElementNS(SVGNS,'path');
+  outerLine.setAttribute('d',path);
+  outerLine.setAttribute('fill','none');
+  outerLine.setAttribute('stroke','#080605');
+  outerLine.setAttribute('stroke-width','11');
+  outerLine.setAttribute('stroke-linejoin','round');
+  outerLine.setAttribute('stroke-linecap','round');
+  outerLine.setAttribute('opacity','0.9');
+  outerLine.setAttribute('filter','url(#drip)');
+  g.appendChild(outerLine);
+
+  // 3. RELLENO SPRAY — color principal, anima de 0 a opacidad según frecuencia
   const fill=document.createElementNS(SVGNS,'path');
-  fill.setAttribute('d',blobShapes[key]);
+  fill.setAttribute('d',path);
   fill.setAttribute('fill',d.color);
   fill.setAttribute('filter','url(#gspray)');
   fill.setAttribute('opacity','0');
-  // progressive fill: opacity scales to how common the theme is
-  const target=(0.30+d.pct*1.6).toFixed(2);
-  fill.style.transition='opacity 1.1s ease';
+  const target=(0.68+d.pct*0.9).toFixed(2);
+  fill.style.transition='opacity 1.2s ease';
+  g.appendChild(fill);
 
-  // label
+  // 4. GOTEOS (DRIPS) — chorros de pintura que bajan de la mancha
+  (blobDrips[key]||[]).forEach(dp=>{
+    const w=dp.w||3.5;
+    const dr=document.createElementNS(SVGNS,'path');
+    dr.setAttribute('d',`M ${dp.x-w} ${dp.y} C ${dp.x-w*1.15} ${dp.y+dp.h*0.42} ${dp.x-w*0.38} ${dp.y+dp.h*0.88} ${dp.x} ${dp.y+dp.h+5} C ${dp.x+w*0.38} ${dp.y+dp.h*0.88} ${dp.x+w*1.15} ${dp.y+dp.h*0.42} ${dp.x+w} ${dp.y} Z`);
+    dr.setAttribute('fill',d.color);
+    dr.setAttribute('opacity','0.82');
+    g.appendChild(dr);
+  });
+
+  // 5. LINER DE COLOR — línea fina sobre el relleno, define el contorno final
+  const liner=document.createElementNS(SVGNS,'path');
+  liner.setAttribute('d',path);
+  liner.setAttribute('fill','none');
+  liner.setAttribute('stroke',d.color);
+  liner.setAttribute('stroke-width','3');
+  liner.setAttribute('stroke-linejoin','round');
+  liner.setAttribute('opacity','0.95');
+  liner.setAttribute('filter','url(#drip)');
+  g.appendChild(liner);
+
+  // 6. HIGHLIGHT — reflejo blanco en la parte superior izquierda
   const bb=blobCenter(key);
+  const hi=document.createElementNS(SVGNS,'ellipse');
+  hi.setAttribute('cx',bb.x-14); hi.setAttribute('cy',bb.y-24);
+  hi.setAttribute('rx','22'); hi.setAttribute('ry','9');
+  hi.setAttribute('fill','rgba(255,255,255,0.18)');
+  hi.setAttribute('transform',`rotate(-25,${bb.x-14},${bb.y-24})`);
+  g.appendChild(hi);
+
+  // 7. LABELS — nombre del tema con sombra de texto (estilo "throw-up")
+  const tShadow=document.createElementNS(SVGNS,'text');
+  tShadow.setAttribute('x',bb.x+2);tShadow.setAttribute('y',bb.y+2);
+  tShadow.setAttribute('text-anchor','middle');tShadow.setAttribute('font-family','Bebas Neue');
+  tShadow.setAttribute('font-size','17');tShadow.setAttribute('fill','rgba(0,0,0,0.55)');
+  tShadow.textContent=key.toUpperCase();
+  g.appendChild(tShadow);
+
   const t=document.createElementNS(SVGNS,'text');
   t.setAttribute('x',bb.x);t.setAttribute('y',bb.y);t.setAttribute('text-anchor','middle');
-  t.setAttribute('font-family','Bebas Neue');t.setAttribute('font-size','15');
-  t.setAttribute('fill','#0d0c0a');t.setAttribute('opacity','0.85');
+  t.setAttribute('font-family','Bebas Neue');t.setAttribute('font-size','17');
+  t.setAttribute('fill','#f2ecd9');t.setAttribute('opacity','0.92');
   t.textContent=key.toUpperCase();
-  const t2=document.createElementNS(SVGNS,'text');
-  t2.setAttribute('x',bb.x);t2.setAttribute('y',bb.y+15);t2.setAttribute('text-anchor','middle');
-  t2.setAttribute('font-family','Archivo,sans-serif');t2.setAttribute('font-size','14');
-  t2.setAttribute('fill','#0d0c0a');t2.setAttribute('opacity','0.7');
-  t2.textContent=Math.round(d.pct*100)+'%';
+  g.appendChild(t);
 
-  g.appendChild(fill); g.appendChild(outline); g.appendChild(t); g.appendChild(t2);
+  const t2=document.createElementNS(SVGNS,'text');
+  t2.setAttribute('x',bb.x);t2.setAttribute('y',bb.y+17);t2.setAttribute('text-anchor','middle');
+  t2.setAttribute('font-family','Bebas Neue');t2.setAttribute('font-size','13');
+  t2.setAttribute('fill','rgba(255,255,255,0.55)');
+  t2.textContent=Math.round(d.pct*100)+'%';
+  g.appendChild(t2);
+
   svg.appendChild(g);
   requestAnimationFrame(()=>{ fill.style.opacity=target; });
-
   g.addEventListener('click',()=>showThemeByKey(key,g));
 }
 
