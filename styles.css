@@ -906,12 +906,13 @@ body::before {
 
 #spray-tip {
     position: absolute;
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-family: 'Archivo', sans-serif;
-    font-size: 13px;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 6px 12px;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 15px;
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--pink);
     pointer-events: none;
     z-index: 1000;
     display: none;
