@@ -34,6 +34,14 @@ const MSJS_FAKE = [
   'Atardecer brutal a la derecha. Miren ahora.',
 ];
 
+/* ================= SPLASH ================= */
+function abrirMasInfo(){
+  const card = document.getElementById('mas-info');
+  const bondi = document.getElementById('bondi-click');
+  card.classList.toggle('abierto');
+  bondi.classList.toggle('encogido');
+}
+
 /* ================= NAVEGACIÓN ================= */
 function ir(id){
   document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
