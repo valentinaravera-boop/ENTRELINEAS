@@ -30,7 +30,7 @@
     </div>
     <div class="bondi-zona">
       <div class="mas-info-card" id="mas-info">
-        <div class="mas-info-label">Más info +</div>
+        <div class="mas-info-label" id="mas-info-label" onclick="abrirMasInfo()">Más info +</div>
         <div class="mas-info-texto">
           <p><b>ENTRE LÍNEAS</b> es una comunidad en red de personas que comparten un mismo recorrido urbano. Una <span style="color:var(--amarillo)">bitácora digital efímera</span> que vive solo mientras dura el viaje + un <span style="color:var(--verde)">fanzine físico</span> que circula entre las paradas de tu línea.</p>
           <p>Sin likes. Sin seguidores. Sin algoritmo. Solo gente que mira por la misma ventanilla.</p>
@@ -73,6 +73,7 @@
       ▸ Son acumulativos. Sin tokens podés seguir leyendo, pero no publicar.<br><br>
       <span style="color:#9b968a;font-size:11px;">La idea: aportes con sentido, cero spam.</span>
     </div>
+    <button class="boton fantasma" onclick="ir('p-splash')" style="margin:0 12px 14px">&#9666; VOLVER</button>
   </section>
 
   <!-- ============ MODO ============ -->
@@ -94,6 +95,7 @@
         <p>Entraste desde la web arriba del bondi. Detectamos el colectivo activo más cercano, lo asociamos a tu viaje y te metemos directo a la <b style="color:var(--blanco)">bitácora colectiva</b> para leer y escribir.</p>
       </div>
     </div>
+    <button class="boton fantasma" onclick="ir('p-splash')" style="margin:0 12px 14px">&#9666; VOLVER</button>
   </section>
 
   <!-- ============ LÍNEA ============ -->
@@ -104,6 +106,7 @@
     </div>
     <div class="sub" id="sub-linea">Estas son las líneas que pasan por esta parada. Elegí la tuya.</div>
     <div id="lista-lineas"></div>
+    <button class="boton fantasma" onclick="ir('p-modo')" style="margin:0 12px 14px">&#9666; VOLVER</button>
   </section>
 
   <!-- ============ MAPA ============ -->
@@ -184,6 +187,7 @@
         <button class="boton fantasma" style="border-color:#fff;color:#fff" onclick="irEspera()">CERRAR Y ESPERAR EL BONDI</button>
       </div>
     </div>
+    <button class="boton fantasma" onclick="ir('p-linea')" style="margin:0 12px 14px">&#9666; CAMBIAR LÍNEA</button>
   </section>
 
   <!-- ============ BITÁCORA ============ -->

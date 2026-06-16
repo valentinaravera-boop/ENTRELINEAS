@@ -38,8 +38,12 @@ const MSJS_FAKE = [
 function abrirMasInfo(){
   const card = document.getElementById('mas-info');
   const bondi = document.getElementById('bondi-click');
+  const label = document.getElementById('mas-info-label');
   card.classList.toggle('abierto');
   bondi.classList.toggle('encogido');
+  const abierto = card.classList.contains('abierto');
+  label.className = abierto ? 'mas-info-label-abierto' : 'mas-info-label';
+  label.textContent = abierto ? 'Cerrar ×' : 'Más info +';
 }
 
 /* ================= NAVEGACIÓN ================= */
