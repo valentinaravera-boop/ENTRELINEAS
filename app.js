@@ -89,6 +89,14 @@ function abrirMasInfo(){
 }
 
 /* ================= NAVEGACIÓN ================= */
+function abrirTokenInfo(){
+  const m=document.getElementById('modal-tokens');
+  m.style.display='flex';
+}
+function cerrarTokenInfo(){
+  document.getElementById('modal-tokens').style.display='none';
+}
+
 function ir(id){
   document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
   document.getElementById(id).classList.add('activa');
@@ -111,6 +119,10 @@ function pintarTokens(){
 function pintarQuien(){
   document.getElementById('barra-quien').innerHTML =
     'a bordo como<br><b>@'+estado.apodo+'</b>';
+  const icono = document.getElementById('icono-user');
+  if(!estado.icono) estado.icono = 'ICONO '+(Math.floor(Math.random()*5)+1)+'.jpg';
+  icono.src = estado.icono;
+  icono.classList.add('visible');
 }
 
 /* ================= REGISTRO ================= */

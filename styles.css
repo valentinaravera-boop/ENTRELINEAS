@@ -88,6 +88,20 @@ body {
   flex-shrink: 0;
 }
 
+.icono-user {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--amarillo);
+  flex-shrink: 0;
+  display: none;
+}
+
+.icono-user.visible {
+  display: block;
+}
+
 #barra .quien {
   font-size: 11px;
   letter-spacing: .5px;
@@ -248,7 +262,7 @@ h3,
 
 .boton.fantasma {
   font-size: 15px;
-  padding: 2px 325px 9px 0px;
+  padding: 2px 260px 9px 0px;
 }
 
 .boton:disabled {
@@ -791,6 +805,7 @@ h3,
 #p-mapa {
   background: #e9e4d6;
   color: var(--negro);
+  overflow: hidden;
 }
 
 #p-mapa .cabeza-mapa {
