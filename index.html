@@ -83,7 +83,7 @@
   <section class="pantalla" id="p-modo">
     <div class="titulo-zona">
       <button class="boton fantasma volver-top" onclick="ir('p-splash')">&#9666; VOLVER</button>
-      <h1>¿Dónde estás ahora?</h1>
+      <h1>¿Dónde estás <em>ahora?</em></h1>
     </div>
     <div class="opciones">
       <div class="tarjeta-modo qr" onclick="elegirModo('parada')">
@@ -118,7 +118,7 @@ Ayudá a quienes estén por subir y escribí en la bitácora.</p>
   <section class="pantalla" id="p-linea">
     <div class="titulo-zona">
       <span class="cinta" id="cinta-linea">PARADA #2841 · AV. CABILDO Y JURAMENTO</span>
-      <h1>¿En qué<br><em>bondi</em><br>viajás hoy?</h1>
+      <h1>¿En qué <em>bondi</em> viajás hoy?</h1>
     </div>
     <div class="sub" id="sub-linea">Estas son las líneas que pasan por esta parada. Elegí la tuya.</div>
     <div id="lista-lineas"></div>
@@ -129,7 +129,7 @@ Ayudá a quienes estén por subir y escribí en la bitácora.</p>
   <section class="pantalla" id="p-mapa">
     <div class="cabeza-mapa rasgado-abajo">
       <h1>LÍNEA <span id="mapa-num-linea">107</span> · <span id="mapa-ramal">RAMAL A</span></h1>
-      <div class="sub">SENTIDO: <span id="mapa-sentido">PUENTE SAAVEDRA → CONSTITUCIÓN</span> · TRAZO HECHO A MARCADOR, COMO DEBE SER</div>
+      <div class="sub">SENTIDO: <span id="mapa-sentido">PUENTE SAAVEDRA → CONSTITUCIÓN</span></div>
     </div>
     <div class="toque-mapa">☟ TOCÁ EL PUNTO: ES TU BONDI</div>
     <svg id="mapa-svg" viewBox="0 0 402 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa del recorrido">
@@ -200,10 +200,10 @@ Ayudá a quienes estén por subir y escribí en la bitácora.</p>
       </div>
       <div class="acciones">
         <button class="boton" style="font-size:18px" onclick="abrirBitacora()">📖 LEER LA BITÁCORA DEL VIAJE</button>
-        <button class="boton fantasma" style="border-color:#fff;color:#fff" onclick="irEspera()">CERRAR Y ESPERAR EL BONDI</button>
+        <button class="boton fantasma1" style="border-color:#fff;color:#fff" onclick="irEspera()">CERRAR Y ESPERAR EL BONDI</button>
       </div>
     </div>
-    <button class="boton fantasma" onclick="ir('p-linea')" style="margin:0 12px 14px">&#9666; CAMBIAR LÍNEA</button>
+    <button class="boton fantasma1" onclick="ir('p-linea')" style="margin:0 12px 14px">&#9666; CAMBIAR LÍNEA</button>
   </section>
 
   <!-- ============ BITÁCORA ============ -->
@@ -215,7 +215,7 @@ Ayudá a quienes estén por subir y escribí en la bitácora.</p>
     </div>
     <div id="muro"></div>
     <div id="zona-escribir"></div>
-    <button class="boton fantasma" id="btn-bajar" onclick="finDeViaje()" style="display:none">🛎 TOCAR TIMBRE Y BAJARSE (terminar viaje)</button>
+    <button class="boton fantasma1" id="btn-bajar" onclick="finDeViaje()" style="display:none">🛎 TOCAR TIMBRE Y BAJARSE (terminar viaje)</button>
     <button class="boton fantasma" id="btn-volver-mapa" onclick="volverDeBitacora()" style="margin:0 12px 14px">◂ VOLVER</button>
   </section>
 

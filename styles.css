@@ -166,6 +166,11 @@ h3,
   transform: rotate(3deg);
 }
 
+.boton.fantasma1 {
+    font-size: 15px;
+    padding: 3px 7px 9px 0px;
+}
+
 .cinta {
   display: inline-block;
   background: rgba(242, 239, 230, .92);
@@ -801,6 +806,9 @@ h3,
 #p-mapa .cabeza-mapa h1 span {
   color: var(--verde);
 }
+#p-mapa .cabeza-mapa[data-color="rojo"] h1 span { color: var(--rojo); }
+#p-mapa .cabeza-mapa[data-color="azul"] h1 span { color: var(--azul); }
+#p-mapa .cabeza-mapa[data-color="amarillo"] h1 span { color: var(--amarillo); }
 
 #p-mapa .cabeza-mapa .sub {
   font-size: 11px;
