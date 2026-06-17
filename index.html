@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ENTRE LÍNEAS — bitácora de bondi</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="telefono">
@@ -79,23 +82,36 @@
   <!-- ============ MODO ============ -->
   <section class="pantalla" id="p-modo">
     <div class="titulo-zona">
-      <span class="cinta">DOS FORMAS DE ENTRAR</span>
-      <h1>¿Dónde<br>estás <span>ahora</span>?</h1>
+      <button class="boton fantasma volver-top" onclick="ir('p-splash')">&#9666; VOLVER</button>
+      <h1>¿Dónde estás ahora?</h1>
     </div>
     <div class="opciones">
       <div class="tarjeta-modo qr" onclick="elegirModo('parada')">
-        <span class="num">OPCIÓN 1</span>
-        <div class="qr-fake" aria-hidden="true"></div>
-        <h2 style="color:var(--verde)">Estoy en<br>la parada</h2>
-        <p>Escaneaste el QR pegado junto al fanzine físico. Vas a ver el mapa de tu línea, cuánto falta para tu bondi y la bitácora del viaje que se acerca — <b style="color:var(--blanco)">solo lectura</b> hasta que subas.</p>
+        <div class="tarjeta-body">
+          <div class="tarjeta-izq">
+            <div class="tarjeta-titulo">
+              <h2>Estoy en la parada</h2>
+              <img src="flecha.png" class="flecha-titulo" alt="">
+            </div>
+            <p>Podés ver el mapa de tu linea, cuánto falta para el bondi y la bitácora de viaje.</p>
+          </div>
+          <img src="parada.png" class="img-modo" alt="Estoy en la parada">
+        </div>
       </div>
       <div class="tarjeta-modo viaje" onclick="elegirModo('viaje')">
-        <span class="num">OPCIÓN 2</span>
-        <h2 style="color:var(--rojo)">Ya estoy<br>viajando</h2>
-        <p>Entraste desde la web arriba del bondi. Detectamos el colectivo activo más cercano, lo asociamos a tu viaje y te metemos directo a la <b style="color:var(--blanco)">bitácora colectiva</b> para leer y escribir.</p>
+        <div class="tarjeta-body">
+          <div class="tarjeta-izq">
+            <div class="tarjeta-titulo">
+              <h2>Ya estoy viajando</h2>
+              <img src="flecha.png" class="flecha-titulo" alt="">
+            </div>
+            <p>Estás arriba del bondi?
+Ayudá a quienes estén por subir y escribí en la bitácora.</p>
+          </div>
+          <img src="image 80.png" class="img-modo2" alt="Ya estoy viajando">
+        </div>
       </div>
     </div>
-    <button class="boton fantasma" onclick="ir('p-splash')" style="margin:0 12px 14px">&#9666; VOLVER</button>
   </section>
 
   <!-- ============ LÍNEA ============ -->
