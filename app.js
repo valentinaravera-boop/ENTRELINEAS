@@ -12,14 +12,14 @@ const estado = {
 };
 
 const LINEAS = [
-  {num:'28',  color:'verde', img:'linea 28.png',  ramal:'Ramal Retiro',               sentido:'HACIA RETIRO',               dato:'Ideal para mirar por la ventana y descubrir rincones que siempre pasan desapercibidos.'},
-  {num:'33',  color:'verde', img:'linea 33.png',  ramal:'Ramal Ciudad Universitaria', sentido:'HACIA CIUDAD UNIVERSITARIA', dato:'Si levantás la vista del celular, el río aparece cuando menos lo esperás.'},
-  {num:'34',  color:'azul',  img:'linea 34.png',  ramal:'Ramal Liniers',              sentido:'HACIA LINIERS',              dato:'Probá mirar por la ventana durante un minuto. Siempre aparece algo inesperado.'},
-  {num:'37',  color:'verde', img:'linea 37.png',  ramal:'Ramal Lanús',                sentido:'HACIA LANÚS',                dato:'Cada barrio cambia el paisaje, pero las historias siguen viajando.'},
-  {num:'160', color:'rojo',  img:'linea 160.png', ramal:'Ramal Palermo',              sentido:'HACIA PALERMO',              dato:'Un viaje largo para perderse mirando la ciudad entre semáforo y semáforo.'},
-  {num:'166', color:'rojo',  img:'linea 166.png', ramal:'Ramal Palermo',              sentido:'HACIA PALERMO',              dato:'Las mejores observaciones suelen ocurrir cuando no estás buscando nada.'},
-  {num:'107', color:'verde', img:'linea 107.png', ramal:'Ramal Ciudad Universitaria', sentido:'HACIA CIUDAD UNIVERSITARIA', dato:'Entre mochilas, apuntes y apurados, siempre aparece alguna escena para recordar.'},
-  {num:'45',  color:'verde', img:'linea 45.png',  ramal:'Ramal Retiro',               sentido:'HACIA RETIRO',               dato:'Cada mañana suben decenas de historias distintas a este recorrido.'},
+  {num:'28',  color:'verde', img:'linea 28.png',  ramal:'Ramal Retiro',                sentido:'HACIA RETIRO',                              dato:'Ideal para mirar por la ventana y descubrir rincones que siempre pasan desapercibidos.'},
+  {num:'33',  color:'verde', img:'linea 33.png',  ramal:'Ramal Monte Chingolo',         sentido:'CIU. UNIVERSITARIA → MONTE CHINGOLO',        dato:'Si levantás la vista del celular, el río aparece cuando menos lo esperás.'},
+  {num:'34',  color:'azul',  img:'linea 34.png',  ramal:'Ramal Costanera',              sentido:'LINIERS → PALERMO / COSTANERA',              dato:'Probá mirar por la ventana durante un minuto. Siempre aparece algo inesperado.'},
+  {num:'37',  color:'verde', img:'linea 37.png',  ramal:'Ramal Lanús',                  sentido:'PALERMO → LANÚS',                            dato:'Cada barrio cambia el paisaje, pero las historias siguen viajando.'},
+  {num:'45',  color:'verde', img:'linea 45.png',  ramal:'Ramal Remedios de Escalada',   sentido:'CIU. UNIVERSITARIA → REMEDIOS DE ESCALADA',  dato:'Cada mañana suben decenas de historias distintas a este recorrido.'},
+  {num:'107', color:'verde', img:'linea 107.png', ramal:'Ramal San Justo',              sentido:'CIU. UNIVERSITARIA → SAN JUSTO',             dato:'Entre mochilas, apuntes y apurados, siempre aparece alguna escena para recordar.'},
+  {num:'160', color:'rojo',  img:'linea 160.png', ramal:'Ramal Barrio Don Orione',      sentido:'CIU. UNIVERSITARIA → CLAYPOLE',              dato:'Un viaje largo para perderse mirando la ciudad entre semáforo y semáforo.'},
+  {num:'166', color:'rojo',  img:'linea 166.png', ramal:'Ramal Morón',                  sentido:'PALERMO → MORÓN',                            dato:'Las mejores observaciones suelen ocurrir cuando no estás buscando nada.'},
 ];
 
 const APODOS_FAKE = ['fantasma_del_60','la_ventanilla','che_bondi','ruido_blanco','asiento_37','tinta_violeta','el_de_atras','morocha_fm','pibe_termo','sube_agotada'];
@@ -174,7 +174,7 @@ function pintarLineas(){
     d.onclick=()=>elegirLinea(l);
     d.innerHTML='<img src="'+l.img+'" alt="Colectivo línea '+l.num+'">'+
       '<div class="num-linea">'+l.num+'</div>'+
-      '<div class="datos"><b>'+l.ramal+' · '+l.sentido+'</b>'+l.dato+'</div>';
+      '<div class="datos"><b>'+l.sentido+'</b>'+l.dato+'</div>';
     cont.appendChild(d);
   });
 }
@@ -182,7 +182,6 @@ function pintarLineas(){
 function elegirLinea(l){
   estado.linea=l;
   document.getElementById('mapa-num-linea').textContent=l.num;
-  document.getElementById('mapa-ramal').textContent=l.ramal;
   document.getElementById('mapa-sentido').textContent=l.sentido;
   document.querySelector('#p-mapa .cabeza-mapa').dataset.color=l.color;
   document.querySelectorAll('.ficha-num-linea').forEach(e=>e.textContent=l.num);
@@ -237,8 +236,29 @@ function llegoBondi(){
 }
 
 /* ================= BITÁCORA ================= */
+function mostrarModalSL(){
+  const modal=document.getElementById('modal-sl');
+  const texto=document.getElementById('modal-sl-texto');
+  const cinta=document.getElementById('modal-sl-cinta');
+  if(!estado.abordo){
+    cinta.textContent='👀 MODO LECTURA';
+    texto.textContent='Estás en la parada. Podés leer la bitácora del viaje, espiá lo que se dice adentro del bondi y anticipá tu experiencia. Para escribir, tenés que estar arriba del colectivo.';
+  } else {
+    cinta.textContent='🎟 SIN TOKENS';
+    texto.textContent='Te quedaste sin tokens. Podés seguir leyendo, pero para publicar necesitás completar viajes. Cada viaje terminado suma +1 token.';
+  }
+  modal.classList.add('visible');
+}
+function cerrarModalSL(){
+  document.getElementById('modal-sl').classList.remove('visible');
+}
 function abrirBitacora(){
   ir('p-bitacora');
+  const notif=document.getElementById('notif-efimera');
+  notif.classList.add('visible');
+  clearTimeout(estado.timerNotif);
+  estado.timerNotif=setTimeout(()=>notif.classList.remove('visible'),4000);
+  if(!estado.abordo||estado.tokens<=0) mostrarModalSL();
   const muro=document.getElementById('muro');
   if(!muro.dataset.cargada){
     muro.dataset.cargada='1';
@@ -264,14 +284,12 @@ function volverDeBitacora(){
 
 function pintarZonaEscribir(){
   const z=document.getElementById('zona-escribir');
-  if(!estado.abordo){
-    z.innerHTML='<div class="solo-lectura">👀 MODO LECTURA — estás en la parada.<br>Para escribir tenés que estar arriba del bondi. Mientras: leé, espiá, anticipá tu viaje.</div>';
+  if(!estado.abordo||estado.tokens<=0){
+    z.innerHTML='';
+    z.style.display='none';
     return;
   }
-  if(estado.tokens<=0){
-    z.innerHTML='<div class="solo-lectura">🎟 TE QUEDASTE SIN TOKENS.<br>Podés seguir leyendo, pero para publicar necesitás completar viajes (+1 token cada uno).</div>';
-    return;
-  }
+  z.style.display='';
   z.innerHTML=
     '<div class="fila-input">'+
     '<textarea id="input-msj" maxlength="120" placeholder="¿Qué está pasando en este viaje? (máx. 120)" oninput="contar()"></textarea>'+
