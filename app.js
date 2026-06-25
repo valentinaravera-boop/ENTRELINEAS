@@ -15,7 +15,7 @@ const LINEAS = [
   {num:'28',  color:'verde', img:'linea 28.png',  ramal:'Ramal Retiro',                sentido:'HACIA RETIRO',                              dato:'Ideal para mirar por la ventana y descubrir rincones que siempre pasan desapercibidos.'},
   {num:'33',  color:'verde', img:'linea 33.png',  ramal:'Ramal Monte Chingolo',         sentido:'CIU. UNIVERSITARIA → MONTE CHINGOLO',        dato:'Si levantás la vista del celular, el río aparece cuando menos lo esperás.'},
   {num:'34',  color:'azul',  img:'linea 34.png',  ramal:'Ramal Costanera',              sentido:'LINIERS → PALERMO / COSTANERA',              dato:'Probá mirar por la ventana durante un minuto. Siempre aparece algo inesperado.'},
-  {num:'37',  color:'verde', img:'linea 37.png',  ramal:'Ramal Lanús',                  sentido:'PALERMO → LANÚS',                            dato:'Cada barrio cambia el paisaje, pero las historias siguen viajando.'},
+  {num:'42',  color:'verde', img:'linea 42.png',  ramal:'Ramal Lanús',                  sentido:'PALERMO → LANÚS',                            dato:'Cada barrio cambia el paisaje, pero las historias siguen viajando.'},
   {num:'45',  color:'verde', img:'linea 45.png',  ramal:'Ramal Remedios de Escalada',   sentido:'CIU. UNIVERSITARIA → REMEDIOS DE ESCALADA',  dato:'Cada mañana suben decenas de historias distintas a este recorrido.'},
   {num:'107', color:'verde', img:'linea 107.png', ramal:'Ramal San Justo',              sentido:'CIU. UNIVERSITARIA → SAN JUSTO',             dato:'Entre mochilas, apuntes y apurados, siempre aparece alguna escena para recordar.'},
   {num:'160', color:'rojo',  img:'linea 160.png', ramal:'Ramal Barrio Don Orione',      sentido:'CIU. UNIVERSITARIA → CLAYPOLE',              dato:'Un viaje largo para perderse mirando la ciudad entre semáforo y semáforo.'},
@@ -82,7 +82,7 @@ function abrirMasInfo(){
   const bondi = document.getElementById('bondi-click');
   const label = document.getElementById('mas-info-label');
   card.classList.toggle('abierto');
-  bondi.classList.toggle('encogido');
+  if(bondi) bondi.classList.toggle('encogido');
   const abierto = card.classList.contains('abierto');
   label.className = abierto ? 'mas-info-label-abierto' : 'mas-info-label';
   label.textContent = abierto ? 'Cerrar ×' : 'Más info +';
@@ -172,9 +172,20 @@ function pintarLineas(){
     d.className='bondi';
     d.dataset.color=l.color;
     d.onclick=()=>elegirLinea(l);
-    d.innerHTML='<img src="'+l.img+'" alt="Colectivo línea '+l.num+'">'+
-      '<div class="num-linea">'+l.num+'</div>'+
-      '<div class="datos"><b>'+l.sentido+'</b>'+l.dato+'</div>';
+    d.innerHTML=
+      '<img class="bondi-card-bg" src="'+l.num+'.png" alt="Línea '+l.num+'">'+
+      '<div class="bondi-overlay">'+
+        '<div class="bondi-cabeza">'+
+          '<div class="bondi-sentido-card">'+l.sentido+'</div>'+
+          '<button class="bondi-save" onclick="event.stopPropagation()" title="Guardar">'+
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'+
+              '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'+
+            '</svg>'+
+          '</button>'+
+        '</div>'+
+        '<div class="bondi-num-card">LÍNEA <span>'+l.num+'</span></div>'+
+        '<button class="bondi-ir">IR</button>'+
+      '</div>';
     cont.appendChild(d);
   });
 }
@@ -186,6 +197,7 @@ function elegirLinea(l){
   document.querySelector('#p-mapa .cabeza-mapa').dataset.color=l.color;
   document.querySelectorAll('.ficha-num-linea').forEach(e=>e.textContent=l.num);
   document.getElementById('espera-linea').textContent=l.num;
+  const el2=document.getElementById('espera-linea2'); if(el2) el2.textContent=l.num;
   document.getElementById('bita-meta').textContent='LÍNEA '+l.num+' · INTERNO 343 · SALIÓ DE TERMINAL '+horaHaceMin(23);
   if(estado.modo==='viaje'){
     estado.abordo=true;
@@ -210,23 +222,42 @@ function irEspera(){
 function arrancarEspera(){
   ir('p-espera');
   estado.minutos = parseInt(document.getElementById('min-llegada').textContent)||8;
+  const sentidoEl = document.getElementById('espera-sentido');
+  if(sentidoEl && estado.linea) sentidoEl.textContent = estado.linea.sentido;
   pintarEspera();
   clearInterval(estado.timerLlegada);
+  let segsRestantes = 8;
+  actualizarCron(estado.minutos, segsRestantes);
   estado.timerLlegada=setInterval(()=>{
-    estado.minutos--;
-    document.getElementById('min-llegada').textContent=Math.max(estado.minutos,0);
-    pintarEspera();
-    if(estado.minutos<=0){
-      clearInterval(estado.timerLlegada);
-      document.getElementById('cuenta-llegada').textContent='🚍 ¡TU '+estado.linea.num+' ESTÁ LLEGANDO A LA PARADA!';
+    segsRestantes--;
+    if(segsRestantes < 0){
+      segsRestantes = 8;
+      estado.minutos--;
+      document.getElementById('min-llegada').textContent=Math.max(estado.minutos,0);
+      pintarEspera();
+      if(estado.minutos<=0){
+        clearInterval(estado.timerLlegada);
+        segsRestantes = 0;
+      }
     }
-  },9000); // 9s = "1 minuto" para la demo
+    actualizarCron(Math.max(estado.minutos,0), Math.max(segsRestantes,0));
+  },1000); // 1 segundo real, 9s = "1 minuto" para la demo
 }
 function pintarEspera(){
   document.getElementById('espera-min').textContent=Math.max(estado.minutos,0);
-  if(estado.minutos>0){
-    document.getElementById('cuenta-llegada').textContent='🚍 TU '+(estado.linea?estado.linea.num:'107')+' ESTÁ A '+estado.minutos+' MIN — HAY TIEMPO DE FANZINE';
-  }
+}
+function actualizarCron(mins, secs){
+  const m1=document.getElementById('cron-m1');
+  const m2=document.getElementById('cron-m2');
+  const s1=document.getElementById('cron-s1');
+  const s2=document.getElementById('cron-s2');
+  if(!m1) return;
+  const m=Math.max(mins,0);
+  const s=Math.max(secs,0);
+  m1.textContent=Math.floor(m/10);
+  m2.textContent=m%10;
+  s1.textContent=Math.floor(s/10);
+  s2.textContent=s%10;
 }
 function llegoBondi(){
   clearInterval(estado.timerLlegada);
